@@ -1,9 +1,87 @@
 <script>
-	let name = 'world'
-	const buttons = ['AC', '', '%', '/', '7', '8', '9', 'X', '4', '5', '6', '-', '1', '2', '3', '+', '()', '0', ',', '=']
+	import { create, all } from 'mathjs'
+
+	let currentValue = '0'
+	let curentResult = ''
+	const buttons = [
+		{ name: 'C', type: 'button' },
+		{ name: 'CE', type: 'deleteButton' },
+		{ name: '%', type: 'button' },
+		{ name: '/', type: 'button' },
+		{ name: '7', type: 'number' },
+		{ name: '8', type: 'number' },
+		{ name: '9', type: 'number' },
+		{ name: 'x', type: 'button' },
+		{ name: '4', type: 'number' },
+		{ name: '5', type: 'number' },
+		{ name: '6', type: 'number' },
+		{ name: '-', type: 'button' },
+		{ name: '1', type: 'number' },
+		{ name: '2', type: 'number' },
+		{ name: '3', type: 'number' },
+		{ name: '+', type: 'button' },
+		{ name: '+/-', type: 'number' },
+		{ name: '0', type: 'number' },
+		{ name: '.', type: 'symbol' },
+		{ name: '=', type: 'button' }
+		// 'C',
+		// 'CE',
+		// '%',
+		// '/',
+		// '7',
+		// '8',
+		// '9',
+		// 'x',
+		// '4',
+		// '5',
+		// '6',
+		// '-',
+		// '1',
+		// '2',
+		// '3',
+		// '+',
+		// '+/-',
+		// '0',
+		// '.',
+		// '='
+	]
+	const math = create(all, {})
+
 	function handleClick(event) {
-		console.log('event: ', event)
-		alert('no more alerts')
+		if (event.target.value.toString().match(/=/)) {
+			;[curentResult, currentValue] = [currentValue, curentResult]
+		} else if (event.target.value === 'C') {
+			currentValue = '0'
+		} else if (event.target.value.match(/CE/)) {
+			currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : '0'
+			calculate()
+		} else {
+			appendNumber(event.target.value)
+			calculate()
+		}
+	}
+
+	const calculate = () => {
+		try {
+			// Math.trunc используется для округления до целого числа
+			curentResult = `=${math.evaluate(currentValue)}`
+		} catch {
+			curentResult = 'Error'
+			// // сохраняем значение поля
+			// let oldValue = output.textContent
+			// // создаем новую переменную
+			// let newValue = 'недопустимое выражение'
+			// // выводим значение новой переменной в поле
+			// output.textContent = newValue
+			// // через полторы секунды возвращаем полю старое значение
+			// setTimeout(() => {
+			// 	output.textContent = oldValue
+			// }, 1500)
+		}
+	}
+
+	const appendNumber = (value) => {
+		currentValue = currentValue === '0' ? value : currentValue + value
 	}
 </script>
 
@@ -16,19 +94,21 @@
 	<ul class="historyDetails">
 		<li>
 			<small />
-			<h2>h2</h2>
+			<h2>{curentResult}</h2>
 		</li>
 	</ul>
 
 	<div class="middle">
 		<small />
 		<div>
-			<h1>Hello {name}!</h1>
+			<h1>{currentValue}</h1>
 		</div>
 	</div>
 	<div class="bottom">
 		{#each buttons as button}
-			<button on:click={handleClick}>{button}</button>
+			<button on:click={handleClick} name="key" class={button.type} value={button.name} aria-label={button.name}>
+				{button.name}
+			</button>
 		{/each}
 	</div>
 </div>
