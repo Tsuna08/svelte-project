@@ -3,9 +3,12 @@
 
 	let currentValue = '0'
 	let curentResult = ''
+	let prevValue = ''
+	let prevResult = ''
+	let historyData = []
 	const buttons = [
 		{ name: 'C', type: 'button' },
-		{ name: 'CE', type: 'deleteButton' },
+		{ name: '', type: 'deleteButton' },
 		{ name: '%', type: 'button' },
 		{ name: '/', type: 'button' },
 		{ name: '7', type: 'number' },
@@ -49,10 +52,20 @@
 
 	function handleClick(event) {
 		if (event.target.value.toString().match(/=/)) {
+			// ;[curentResult, currentValue] = [currentValue, curentResult]
+			historyData.push({
+				operations: currentValue,
+				sum: curentResult
+			})
+			console.log('historyData: ', historyData)
+			prevValue = currentValue
+			prevResult = prevResult
 			;[curentResult, currentValue] = [currentValue, curentResult]
+			prevValue = currentValue
+			prevResult = prevResult
 		} else if (event.target.value === 'C') {
 			currentValue = '0'
-		} else if (event.target.value.match(/CE/)) {
+		} else if (event.target.value === '') {
 			currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : '0'
 			calculate()
 		} else {
@@ -86,18 +99,15 @@
 </script>
 
 <div class="container">
-	<div class="top">
-		<!-- <button class="history">',
-		<button  class="delete">', -->
-	</div>
-
 	<ul class="historyDetails">
-		<li>
-			<small />
-			<h2>{curentResult}</h2>
-		</li>
+		{#each historyData as history}
+			<li>
+				<small>{history.operations}</small>
+				<h2>{history.sum}</h2>
+			</li>
+		{/each}
 	</ul>
-
+	<div>32423 {historyData}</div>
 	<div class="middle">
 		<small />
 		<div>
@@ -134,5 +144,9 @@
 		width: 50px;
 		border-radius: 50%;
 		border: none;
+	}
+	.deleteButton {
+		background: url('../assets/delete.svg') no-repeat top left;
+		background-color: rgb(239, 239, 239);
 	}
 </style>
